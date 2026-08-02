@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { useActiveSection } from '@/hooks/useActiveSection'
+import { useScrollToSection } from '@/providers/LenisProvider'
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home' },
@@ -11,30 +12,11 @@ const NAV_ITEMS = [
   { id: 'contact', label: 'Contact' },
 ]
 
+const SECTION_IDS = NAV_ITEMS.map((item) => item.id)
+
 export function Navigation() {
-  const [scrolled, setScrolled] = useState(false)
-  const [active, setActive] = useState('home')
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40)
-
-      const offsets = NAV_ITEMS.map(({ id }) => {
-        const el = document.getElementById(id)
-        if (!el) return { id, top: Infinity }
-        return { id, top: Math.abs(el.getBoundingClientRect().top - 120) }
-      })
-      offsets.sort((a, b) => a.top - b.top)
-      setActive(offsets[0].id)
-    }
-    handleScroll()
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  const scrollToSection = (sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const { active, scrolled } = useActiveSection(SECTION_IDS)
+  const scrollToSection = useScrollToSection()
 
   return (
     <motion.nav

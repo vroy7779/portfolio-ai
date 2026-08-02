@@ -2,21 +2,19 @@
 
 import { motion } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
-import { NetworkGraphic } from '@/components/graphics/NetworkGraphic'
-
-const EASE = [0.16, 1, 0.3, 1] as const
+import { HeroBackground } from '@/components/graphics/HeroBackground'
+import { EASE } from '@/animations/easing'
+import { useScrollToSection } from '@/providers/LenisProvider'
 
 export function HeroSection() {
-  const scrollToProjects = () => {
-    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const scrollToSection = useScrollToSection()
 
   return (
     <section
       id="home"
       className="relative bg-[var(--bg)] overflow-hidden pt-40 pb-24 md:pt-44 md:pb-28"
     >
-      <NetworkGraphic className="absolute inset-0 w-full h-full" />
+      <HeroBackground className="absolute inset-0 w-full h-full" />
 
       <div className="w-full relative z-10">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
@@ -88,7 +86,7 @@ export function HeroSection() {
             <motion.button
               whileHover={{ y: -3, boxShadow: '0 12px 24px -8px rgba(79,70,229,0.45)' }}
               whileTap={{ scale: 0.97 }}
-              onClick={scrollToProjects}
+              onClick={() => scrollToSection('projects')}
               className="inline-flex items-center gap-2 bg-[var(--brand)] text-white px-7 py-3.5 rounded-full font-medium transition-colors hover:bg-indigo-700"
             >
               View My Work

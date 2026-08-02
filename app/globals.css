@@ -166,6 +166,20 @@ html {
   scroll-padding-top: 88px;
 }
 
+/* Lenis owns scroll smoothing while it's active — native CSS smooth-scroll would
+   otherwise fight its interpolation. Falls away entirely (via LenisProvider's
+   reduced-motion bypass) for visitors who asked for reduced motion, at which
+   point the plain `html { scroll-behavior: smooth }` above governs instead. */
+html.lenis, html.lenis body {
+  min-height: 100%;
+}
+html.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+html.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 /* Respect reduced-motion preference sitewide — smooth scroll and Lenis are both disabled via JS,
    this covers any native CSS-driven scrolling too. */
 @media (prefers-reduced-motion: reduce) {

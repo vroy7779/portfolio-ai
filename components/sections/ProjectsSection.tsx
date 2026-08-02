@@ -15,8 +15,8 @@ import cienaDesignSystemImage from '@/assets/85bdecb474ed5e0fe5da702b77e01ab98b3
 import simplylifeDesignSystemImage from '@/assets/6dd04533e27478f2c5be34374efd8e8d9727127b.png'
 import shellImage from '@/assets/b15d4a876e4af15635c381d5f3539461afef0a0f.png'
 import greenwayHealthLogo from '@/assets/gw.png'
+import { EASE } from '@/animations/easing'
 
-const EASE = [0.16, 1, 0.3, 1] as const
 
 type ProjectAction =
   | { type: 'sidecar'; key: 'ciena' | 'bupa' | 'shell' }

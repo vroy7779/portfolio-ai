@@ -3,8 +3,8 @@
 import { motion } from 'motion/react'
 import { Target, Palette, Code2, Sparkles, Grid3x3, FlaskConical } from 'lucide-react'
 import { NetworkGraphic } from '@/components/graphics/NetworkGraphic'
+import { EASE } from '@/animations/easing'
 
-const EASE = [0.16, 1, 0.3, 1] as const
 
 const SKILL_CATEGORIES = [
   {

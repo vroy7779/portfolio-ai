@@ -2,8 +2,8 @@
 
 import { motion } from 'motion/react'
 import { NetworkGraphic } from '@/components/graphics/NetworkGraphic'
+import { EASE } from '@/animations/easing'
 
-const EASE = [0.16, 1, 0.3, 1] as const
 
 const TRAITS = [
   'Product Strategy',

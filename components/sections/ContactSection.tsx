@@ -2,8 +2,8 @@
 
 import { motion } from 'motion/react'
 import { ArrowUpRight, Calendar, Mail, MapPin, Phone } from 'lucide-react'
+import { EASE } from '@/animations/easing'
 
-const EASE = [0.16, 1, 0.3, 1] as const
 
 const CONTACT_INFO = [
   { icon: Mail, label: 'Email', value: 'vroyui@gmail.com', href: 'mailto:vroyui@gmail.com' },

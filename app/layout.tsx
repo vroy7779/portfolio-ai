@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
+import { LenisProvider } from '@/providers/LenisProvider'
 import './globals.css'
 
 const montserrat = Montserrat({
@@ -31,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        {children}
+        <LenisProvider>{children}</LenisProvider>
         <Analytics />
       </body>
     </html>

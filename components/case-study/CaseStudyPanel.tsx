@@ -5,8 +5,8 @@ import { X, ChevronLeft, ChevronRight, ArrowUpRight, Check } from 'lucide-react'
 import { useState } from 'react'
 import { ImageWithFallback } from '@/components/figma/ImageWithFallback'
 import type { StaticImageData } from 'next/image'
+import { EASE, SURFACE_SPRING } from '@/animations/easing'
 
-const EASE = [0.16, 1, 0.3, 1] as const
 
 /** A screen/gallery image is either a locally imported asset (StaticImageData) or a plain URL string. */
 type ImageSrc = string | StaticImageData
@@ -105,7 +105,7 @@ export function CaseStudyPanel({
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 32, stiffness: 300 }}
+            transition={SURFACE_SPRING}
             className="fixed right-0 top-0 h-full w-full sm:w-1/2 bg-[var(--bg)] border-l border-[var(--line)] shadow-2xl z-50 overflow-y-auto"
           >
             {/* Header */}
