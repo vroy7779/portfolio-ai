@@ -41,7 +41,11 @@ const PALETTE = [
 const NODE_COUNT = 70
 const MAX_DISTANCE = 3.4
 const CONNECTION_UPDATE_INTERVAL = 0.15 // seconds — throttles the O(n²) recompute
-const BOUNDS = { x: 8.5, y: 4.6, z: 2.2 }
+const BOUNDS = { x: 8.5, y: 4.6, z: 5.5 }
+// Slow constant turntable — a frontal, motionless point cloud reads as flat 2D
+// line art no matter how correct the perspective math is; continuous rotation
+// is what makes the depth actually legible.
+const BASE_ROTATION_SPEED = 0.12 // rad/sec
 
 interface Node {
   position: THREE.Vector3
@@ -74,6 +78,7 @@ function NodeField() {
   const meshRef = useRef<THREE.InstancedMesh>(null)
   const groupRef = useRef<THREE.Group>(null)
   const timeSinceConnectionUpdate = useRef(0)
+  const baseRotation = useRef(0)
 
   const lineGeometry = useMemo(() => {
     const geometry = new THREE.BufferGeometry()
@@ -148,12 +153,15 @@ function NodeField() {
       lineGeometry.attributes.color.needsUpdate = true
     }
 
-    // Subtle pointer-reactive parallax — ambient depth, not a scroll effect.
+    // Constant slow turntable, with subtle pointer parallax riding on top —
+    // ambient depth, not a scroll effect.
+    baseRotation.current += delta * BASE_ROTATION_SPEED
+
     if (groupRef.current) {
-      const targetRotY = state.pointer.x * 0.1
-      const targetRotX = -state.pointer.y * 0.06
-      groupRef.current.rotation.y += (targetRotY - groupRef.current.rotation.y) * 0.03
-      groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.03
+      const targetRotY = baseRotation.current + state.pointer.x * 0.15
+      const targetRotX = 0.15 - state.pointer.y * 0.08
+      groupRef.current.rotation.y += (targetRotY - groupRef.current.rotation.y) * 0.05
+      groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.05
     }
   })
 
@@ -189,9 +197,12 @@ export function NetworkScene({ paused = false }: NetworkSceneProps) {
       style={{ width: '100%', height: '100%', display: 'block' }}
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
-      camera={{ position: [0, 0, 11], fov: 45 }}
+      camera={{ position: [0, 0, 9], fov: 50 }}
       frameloop={paused ? 'never' : 'always'}
     >
+      {/* Fades far nodes toward the page background — the depth cue that
+          actually sells the rotation as 3D rather than a spinning flat plane. */}
+      <fog attach="fog" args={['#f7f6fb', 8, 17]} />
       <NodeField />
     </Canvas>
   )
