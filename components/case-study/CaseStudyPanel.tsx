@@ -106,6 +106,7 @@ export function CaseStudyPanel({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={SURFACE_SPRING}
+            data-lenis-prevent
             className="fixed right-0 top-0 h-full w-full sm:w-1/2 bg-[var(--bg)] border-l border-[var(--line)] shadow-2xl z-50 overflow-y-auto"
           >
             {/* Header */}
