@@ -17,7 +17,7 @@ export function ShellCaseStudySidecar({ isOpen, onClose }: ShellCaseStudySidecar
     <CaseStudyPanel
       isOpen={isOpen}
       onClose={onClose}
-      index="04"
+      index="05"
       company="Shell"
       title="Enterprise Operations Applications"
       summary="Shell needed a consistent design language across supply chain tracking, asset management, e-commerce, brand asset management, and a careers portal — spanning 50+ countries and 10,000+ users. I designed the enterprise application suite that unified them, cutting new-user onboarding time by 40% and improving operational efficiency by 30%."

@@ -6,25 +6,23 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Editorial palette — light, Stripe-inspired */
-  --bg: #f7f6fb;
-  --bg-soft: #efedf9;
+  /* Editorial: white, ink, hairlines. One typeface, no decoration. */
+  color-scheme: light;
+  --bg: #ffffff;
+  --bg-soft: #f4f4f2;
   --surface: #ffffff;
-  --text: #14162b;
-  --text-muted: #5b5e76;
-  --text-faint: #9a9cb0;
-  --text-ghost: rgba(20, 22, 43, 0.045);
-  --line: rgba(20, 22, 43, 0.09);
-  --line-strong: rgba(20, 22, 43, 0.16);
+  --ink: #0a0a0a;
+  --text: #0a0a0a;
+  --text-muted: #555555;
+  --text-faint: #707070;
+  --text-ghost: rgba(10, 10, 10, 0.05);
+  --line: #ececea;
+  --line-strong: #d6d6d2;
 
-  /* Single UI accent (named --brand to avoid colliding with shadcn's --accent token below) */
-  --brand: #4f46e5;
-  --brand-rgb: 79, 70, 229;
-
-  /* Decorative gradient — reserved for the network graphic only */
-  --grad-a: #6c5ce7;
-  --grad-b: #ff6fd8;
-  --grad-c: #ff9166;
+  --brand: #0a0a0a;
+  --brand-hover: #333333;
+  --brand-rgb: 10, 10, 10;
+  --brand-soft: rgba(10, 10, 10, 0.06);
 
   --font-size: 14px;
   --background: #ffffff;
@@ -151,14 +149,26 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-montserrat), sans-serif;
+    font-family: var(--font-archivo), system-ui, sans-serif;
   }
 }
 
 .font-display {
-  font-family: var(--font-montserrat), sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+}
+
+/* Visible keyboard focus everywhere (a11y: focus-states) */
+:where(a, button, [role='button']):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Scroll-linked reveal helper used by the hero rule */
+.rule-grow {
+  transform-origin: left;
 }
 
 html {
@@ -189,7 +199,7 @@ html.lenis.lenis-stopped {
 }
 
 ::selection {
-  background: var(--brand);
+  background: var(--ink);
   color: #ffffff;
 }
 
@@ -268,5 +278,5 @@ html.lenis.lenis-stopped {
 }
 
 html {
-  font-size: var(--font-size);
+  font-size: 16px;
 }

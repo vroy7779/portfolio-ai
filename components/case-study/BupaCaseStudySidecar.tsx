@@ -20,7 +20,7 @@ export function BupaCaseStudySidecar({ isOpen, onClose }: BupaCaseStudySidecarPr
     <CaseStudyPanel
       isOpen={isOpen}
       onClose={onClose}
-      index="02"
+      index="03"
       company="Bupa Arabia"
       title="Insurance Sales & Population Health Management"
       summary="Bupa Arabia needed two products doing fundamentally different jobs: sell health insurance online, and help existing members actually use their benefits day to day. I led end-to-end design for both — a B2C insurance sales website and a Population Health Management mobile app — across research, journey mapping, bilingual (Arabic/English) UI, and usability testing. Online insurance conversions rose 35%; support call volume dropped 28% as self-service replaced the phone."

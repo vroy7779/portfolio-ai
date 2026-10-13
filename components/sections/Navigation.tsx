@@ -3,10 +3,10 @@
 import { motion } from 'motion/react'
 import { useActiveSection } from '@/hooks/useActiveSection'
 import { useScrollToSection } from '@/providers/LenisProvider'
+import { EASE } from '@/animations/easing'
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
   { id: 'skills', label: 'Skills' },
   { id: 'projects', label: 'Work' },
   { id: 'contact', label: 'Contact' },
@@ -14,62 +14,64 @@ const NAV_ITEMS = [
 
 const SECTION_IDS = NAV_ITEMS.map((item) => item.id)
 
+/** Floating top bar: name left, section links centre, availability right. Flat, hairline, no shadow. */
 export function Navigation() {
   const { active, scrolled } = useActiveSection(SECTION_IDS)
   const scrollToSection = useScrollToSection()
 
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
+    <motion.header
+      initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? 'bg-[var(--surface)]/85 backdrop-blur-md border-b border-[var(--line)] shadow-[0_1px_2px_rgba(20,22,43,0.04)]' : 'bg-transparent'
-      }`}
+      transition={{ duration: 0.7, ease: EASE }}
+      className="fixed top-4 left-4 right-4 z-50 flex justify-center pointer-events-none"
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="flex items-center justify-between h-[72px]">
-          <button
-            onClick={() => scrollToSection('home')}
-            className="font-display text-[22px] text-[var(--text)] tracking-tight"
-          >
-            Vaibhav Roy
-          </button>
+      <nav
+        aria-label="Primary"
+        className={`pointer-events-auto flex items-center justify-between gap-2 w-full max-w-5xl h-14 rounded-full pl-5 pr-2 border transition-colors duration-300 ${
+          scrolled
+            ? 'bg-white/90 backdrop-blur-md border-[var(--line-strong)]'
+            : 'bg-white/70 backdrop-blur-sm border-[var(--line)]'
+        }`}
+      >
+        <button
+          onClick={() => scrollToSection('home')}
+          className="cursor-pointer font-display text-[17px] text-[var(--ink)] min-h-[44px] flex items-center gap-2"
+        >
+          <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--ink)]" />
+          Vaibhav Roy
+        </button>
 
-          <div className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map((item, index) => (
+        <ul className="hidden md:flex items-center gap-1">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.id}>
               <button
-                key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className="group relative px-4 py-2 flex items-center gap-2 text-sm transition-colors duration-300"
+                aria-current={active === item.id ? 'true' : undefined}
+                className={`cursor-pointer px-4 py-2 text-sm rounded-full transition-colors duration-200 ${
+                  active === item.id
+                    ? 'bg-[var(--ink)] text-white'
+                    : 'text-[var(--text-muted)] hover:text-[var(--ink)]'
+                }`}
               >
-                <span
-                  className={`font-mono text-[10px] transition-colors duration-300 ${
-                    active === item.id ? 'text-indigo-400' : 'text-[var(--text-faint)] group-hover:text-indigo-400/70'
-                  }`}
-                >
-                  0{index + 1}
-                </span>
-                <span
-                  className={`tracking-wide transition-colors duration-300 ${
-                    active === item.id ? 'text-[var(--text)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text)]'
-                  }`}
-                >
-                  {item.label}
-                </span>
+                {item.label}
               </button>
-            ))}
-          </div>
+            </li>
+          ))}
+        </ul>
 
-          <div className="hidden sm:flex items-center gap-2 pl-4 pr-1 py-1 rounded-full border border-[var(--line)]">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-60" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-400" />
-            </span>
-            <span className="text-xs text-[var(--text-muted)] pr-2">Available for work</span>
-          </div>
-        </div>
-      </div>
-    </motion.nav>
+        <a
+          href="mailto:vroyui@gmail.com"
+          className="cursor-pointer inline-flex items-center gap-2 rounded-full border border-[var(--ink)] text-[var(--ink)] text-sm px-5 h-10 transition-colors duration-200 hover:bg-[var(--ink)] hover:text-white"
+        >
+          <span aria-hidden className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-60 motion-safe:animate-ping" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-current" />
+          </span>
+          <span className="hidden sm:inline">Available for work</span>
+          <span className="sm:hidden">Hire me</span>
+        </a>
+      </nav>
+    </motion.header>
   )
 }

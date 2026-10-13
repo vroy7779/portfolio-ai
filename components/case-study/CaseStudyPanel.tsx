@@ -98,7 +98,7 @@ export function CaseStudyPanel({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-[#0b0c16]/50 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/40 z-40"
           />
 
           <motion.div
@@ -107,137 +107,147 @@ export function CaseStudyPanel({
             exit={{ x: '100%' }}
             transition={SURFACE_SPRING}
             data-lenis-prevent
-            className="fixed right-0 top-0 h-full w-full sm:w-1/2 bg-[var(--bg)] border-l border-[var(--line)] shadow-2xl z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full md:w-[min(720px,55vw)] bg-[var(--bg)] border-l border-[var(--line)] shadow-2xl z-50 overflow-y-auto"
           >
-            {/* Header */}
-            <div className="sticky top-0 bg-[var(--bg)]/92 backdrop-blur-md border-b border-[var(--line)] z-10">
-              <div className="px-6 sm:px-10 py-6 flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <span className="font-mono text-sm text-indigo-400 pt-1">{index}</span>
-                  <div>
-                    <p className="text-xs tracking-[0.2em] uppercase text-[var(--text-faint)] mb-1.5">
-                      Case Study &middot; {company}
+            {/* Header — index, title and close share one baseline */}
+            <div className="sticky top-0 bg-[var(--bg)]/95 backdrop-blur-md border-b border-[var(--line)] z-10">
+              <div className="px-6 sm:px-10 h-[88px] flex items-center justify-between gap-6">
+                <div className="flex items-center gap-5 min-w-0">
+                  <span className="font-mono text-sm text-[var(--text-faint)] w-8 flex-shrink-0">{index}</span>
+                  <div className="min-w-0">
+                    <p className="text-[11px] tracking-[0.18em] uppercase text-[var(--text-faint)] mb-1">
+                      Case study &middot; {company}
                     </p>
-                    <h2 className="font-display font-semibold text-xl text-[var(--text)] leading-snug">
-                      {title}
-                    </h2>
+                    <h2 className="font-display text-xl text-[var(--text)] leading-tight truncate">{title}</h2>
                   </div>
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 rounded-full border border-[var(--line-strong)] flex items-center justify-center text-[var(--text-muted)] hover:bg-indigo-400 hover:text-white hover:border-indigo-400 transition-colors duration-300 flex-shrink-0"
+                  aria-label="Close case study"
+                  className="cursor-pointer w-10 h-10 rounded-full border border-[var(--line-strong)] flex items-center justify-center text-[var(--text)] hover:bg-[var(--ink)] hover:text-white hover:border-[var(--ink)] transition-colors duration-200 flex-shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Content */}
-            <div className="px-6 sm:px-10 py-10 space-y-16">
-              {/* Summary */}
+            {/* Content — one left edge, one rhythm */}
+            <div className="px-6 sm:px-10 py-12 space-y-14">
               <motion.p
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: EASE }}
-                className="text-[var(--text-muted)] leading-relaxed text-[15px]"
+                className="text-[var(--text)] text-lg leading-relaxed max-w-[60ch]"
               >
                 {summary}
               </motion.p>
 
-              {/* Meta */}
-              <div className="rounded-2xl bg-[var(--bg-soft)] border border-[var(--line)] p-6 sm:p-8 grid sm:grid-cols-2 gap-x-8 gap-y-6">
+              {/* Meta as aligned label / value rows */}
+              <dl className="border-t border-[var(--line-strong)]">
                 {meta.map((item) => (
-                  <div key={item.label}>
-                    <p className="text-xs tracking-[0.15em] uppercase text-[var(--text-faint)] mb-1.5">
+                  <div
+                    key={item.label}
+                    className="grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] gap-x-6 py-4 border-b border-[var(--line)]"
+                  >
+                    <dt className="text-[11px] tracking-[0.15em] uppercase text-[var(--text-faint)] pt-0.5">
                       {item.label}
-                    </p>
-                    <p className="text-sm text-[var(--text)] leading-relaxed">{item.value}</p>
+                    </dt>
+                    <dd className="text-sm text-[var(--text)] leading-relaxed">{item.value}</dd>
                   </div>
                 ))}
-              </div>
+              </dl>
 
               {/* Process */}
               {process && process.length > 0 && (
-                <div>
+                <section>
                   <SectionLabel n={numberFor('process')} title="Process" />
-                  <div className="mt-6">
+                  <ol className="mt-6 border-t border-[var(--line-strong)]">
                     {process.map((step, i) => (
-                      <div
+                      <li
                         key={step.title}
-                        className={`flex items-start gap-6 py-6 ${i !== 0 ? 'border-t border-[var(--line)]' : ''}`}
+                        className="grid grid-cols-[40px_1fr] gap-x-4 py-5 border-b border-[var(--line)]"
                       >
-                        <span className="font-display text-lg text-[var(--text-faint)] pt-0.5 w-8 flex-shrink-0">
-                          0{i + 1}
-                        </span>
+                        <span className="font-mono text-sm text-[var(--text-faint)] pt-0.5">0{i + 1}</span>
                         <div>
-                          <h5 className="text-[var(--text)] mb-1.5">{step.title}</h5>
+                          <h5 className="text-[var(--text)] mb-1.5 leading-snug">{step.title}</h5>
                           <p className="text-sm text-[var(--text-muted)] leading-relaxed">{step.description}</p>
                         </div>
-                      </div>
+                      </li>
                     ))}
-                  </div>
-                </div>
+                  </ol>
+                </section>
               )}
 
               {/* Research */}
               {research && research.items.length > 0 && (
-                <div>
+                <section>
                   <SectionLabel n={numberFor('research')} title="Research" />
                   {research.intro && (
-                    <p className="text-sm text-[var(--text-muted)] leading-relaxed mt-6 mb-6">{research.intro}</p>
+                    <p className="text-sm text-[var(--text-muted)] leading-relaxed mt-6 max-w-[60ch]">
+                      {research.intro}
+                    </p>
                   )}
-                  <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6 mt-6">
+                  <div className="grid sm:grid-cols-2 gap-x-8 gap-y-7 mt-6 pt-6 border-t border-[var(--line-strong)]">
                     {research.items.map((item) => (
                       <div key={item.title}>
-                        <h6 className="text-sm text-[var(--text)] mb-1.5">{item.title}</h6>
+                        <h6 className="text-sm text-[var(--text)] mb-1.5 leading-snug">{item.title}</h6>
                         <p className="text-sm text-[var(--text-muted)] leading-relaxed">{item.description}</p>
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
               )}
 
               {/* Outcome */}
               {(stats?.length || outcomes?.length) && (
-                <div>
+                <section>
                   <SectionLabel n={numberFor('outcome')} title="Outcome" />
 
                   {stats && stats.length > 0 && (
-                    <div className="flex flex-wrap items-start gap-x-10 gap-y-6 mt-8 pb-8 border-b border-[var(--line)]">
+                    <dl
+                      className="mt-6 grid border-t border-[var(--line-strong)]"
+                      style={{ gridTemplateColumns: `repeat(${Math.min(stats.length, 3)}, minmax(0, 1fr))` }}
+                    >
                       {stats.map((stat, i) => (
-                        <div key={stat.label} className={i > 0 ? 'pl-10 border-l border-[var(--line)]' : ''}>
-                          <p className="font-display text-3xl text-[var(--text)]">{stat.value}</p>
-                          <p className="text-xs text-[var(--text-faint)] uppercase tracking-wide mt-1 max-w-[9rem]">
-                            {stat.label}
-                          </p>
+                        <div
+                          key={stat.label}
+                          className={`py-6 pr-4 ${i % 3 !== 0 ? 'pl-5 border-l border-[var(--line)]' : ''} ${
+                            i >= 3 ? 'border-t border-[var(--line)]' : ''
+                          }`}
+                        >
+                          <dd className="font-display text-3xl text-[var(--text)] leading-none">{stat.value}</dd>
+                          <dt className="text-xs text-[var(--text-muted)] mt-2.5 leading-snug">{stat.label}</dt>
                         </div>
                       ))}
-                    </div>
+                    </dl>
                   )}
 
                   {outcomes && outcomes.length > 0 && (
-                    <ul className="space-y-3 mt-6">
+                    <ul className="mt-2 border-t border-[var(--line-strong)]">
                       {outcomes.map((outcome) => (
-                        <li key={outcome} className="flex items-start gap-3 text-sm text-[var(--text-muted)] leading-relaxed">
-                          <Check className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
+                        <li
+                          key={outcome}
+                          className="grid grid-cols-[40px_1fr] gap-x-4 py-4 border-b border-[var(--line)] text-sm text-[var(--text-muted)] leading-relaxed"
+                        >
+                          <Check className="w-4 h-4 text-[var(--text)] mt-0.5" />
                           <span>{outcome}</span>
                         </li>
                       ))}
                     </ul>
                   )}
-                </div>
+                </section>
               )}
 
               {/* Screens */}
               {screens && screens.length > 0 && (
-                <div>
+                <section>
                   <SectionLabel n={numberFor('screens')} title="Screens" />
-                  <div className="grid sm:grid-cols-2 gap-5 mt-6">
+                  <div className="grid sm:grid-cols-2 gap-6 mt-6">
                     {screens.map((screen) => (
                       <ScreenCard key={screen.title} screen={screen} onOpen={openLightbox} />
                     ))}
                   </div>
-                </div>
+                </section>
               )}
             </div>
           </motion.div>
@@ -315,10 +325,9 @@ export function CaseStudyPanel({
 
 function SectionLabel({ n, title }: { n: string; title: string }) {
   return (
-    <div className="flex items-center gap-4">
-      <span className="font-mono text-sm text-indigo-400">{n}</span>
-      <span className="h-px w-10 bg-[var(--line-strong)]" />
-      <h4 className="text-[var(--text)]">{title}</h4>
+    <div className="flex items-baseline gap-4">
+      <span className="font-mono text-sm text-[var(--text-faint)] w-8">{n}</span>
+      <h4 className="font-display text-2xl text-[var(--text)] leading-none">{title}</h4>
     </div>
   )
 }
@@ -329,25 +338,24 @@ function ScreenCard({ screen, onOpen }: { screen: ScreenItem; onOpen: (images: I
 
   const content = (
     <>
-      <div className="relative overflow-hidden rounded-t-2xl">
+      <div className="relative overflow-hidden bg-[var(--bg-soft)] aspect-[4/3]">
         <ImageWithFallback
           src={screen.image}
           alt={screen.title}
-          className="w-full h-56 object-cover object-top transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
         />
-        <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[var(--bg)]/80 backdrop-blur flex items-center justify-center text-[var(--text)] group-hover:bg-indigo-400 group-hover:text-white transition-colors duration-300">
+        <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-[var(--ink)] transition-colors duration-200 group-hover:bg-[var(--ink)] group-hover:text-white">
           <ArrowUpRight className="w-4 h-4" />
         </div>
       </div>
-      <div className="p-5">
-        <h5 className="text-sm text-[var(--text)] mb-1.5">{screen.title}</h5>
+      <div className="pt-3.5 flex-1">
+        <h5 className="text-sm text-[var(--text)] mb-1 leading-snug">{screen.title}</h5>
         <p className="text-xs text-[var(--text-muted)] leading-relaxed">{screen.description}</p>
       </div>
     </>
   )
 
-  const className =
-    'group rounded-2xl bg-[var(--surface)] border border-[var(--line)] overflow-hidden shadow-[0_8px_24px_-16px_rgba(20,22,43,0.15)] hover:shadow-[0_16px_32px_-16px_rgba(79,70,229,0.25)] transition-shadow duration-500 cursor-pointer block text-left'
+  const className = 'group flex flex-col h-full cursor-pointer text-left'
 
   if (isExternal) {
     return (

@@ -1,10 +1,8 @@
 'use client'
 
-import { motion } from 'motion/react'
-import { ArrowUpRight, ExternalLink, Palette, Play } from 'lucide-react'
-import { ImageWithFallback } from '@/components/figma/ImageWithFallback'
+import { ArrowUpRight } from 'lucide-react'
 import type { StaticImageData } from 'next/image'
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { CienaCaseStudySidecar } from '@/components/case-study/CienaCaseStudySidecar'
 import { BupaCaseStudySidecar } from '@/components/case-study/BupaCaseStudySidecar'
 import { ShellCaseStudySidecar } from '@/components/case-study/ShellCaseStudySidecar'
@@ -15,7 +13,10 @@ import cienaDesignSystemImage from '@/assets/85bdecb474ed5e0fe5da702b77e01ab98b3
 import simplylifeDesignSystemImage from '@/assets/6dd04533e27478f2c5be34374efd8e8d9727127b.png'
 import shellImage from '@/assets/b15d4a876e4af15635c381d5f3539461afef0a0f.png'
 import greenwayHealthLogo from '@/assets/gw.png'
-import { EASE } from '@/animations/easing'
+import { ParallaxImage } from '@/components/motion/ParallaxImage'
+import { RiseText } from '@/components/motion/RiseText'
+import { FadeUp } from '@/components/motion/FadeUp'
+
 
 
 type ProjectAction =
@@ -55,6 +56,32 @@ const featuredProjects: FeaturedProject[] = [
     image: cienaImage,
     technologies: ['B2B SaaS', 'AI Agent', 'Dashboard', 'UX/UI', 'Telecommunication'],
     action: { type: 'sidecar', key: 'ciena' }
+  },
+  {
+    title: 'Agentic AI EHR for Greenway Health',
+    description: [
+      {
+        label: 'Problem',
+        text: "Clinicians using Greenway Health's EHR were losing time to manual documentation and repetitive administrative work that pulled focus away from patient care."
+      },
+      {
+        label: 'Approach',
+        text: 'Designed agentic AI workflows into the EHR — automating documentation, surfacing clinical decision support at the point of care, and keeping a clinician in the loop on every AI-generated recommendation.'
+      }
+    ],
+    image: 'https://images.unsplash.com/photo-1666886573531-48d2e3c2b684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    technologies: ['Healthcare', 'AI', 'Agentic AI', 'EHR', 'UX/UI'],
+    action: {
+      type: 'dropdown',
+      links: [
+        {
+          label: 'Design',
+          url: 'https://www.figma.com/design/oIjXrPXpqFGf4mX38wuRt1/Design-Systems?node-id=348-58333&t=1zAWu8Fhw2s7sNtU-4'
+        },
+        { label: 'Prototype', url: 'https://horse-false-15368224.figma.site/' }
+      ]
+    },
+    logo: greenwayHealthLogo
   },
   {
     title: 'Bupa Arabia — Insurance Sales & Population Health Management',
@@ -118,23 +145,6 @@ const featuredProjects: FeaturedProject[] = [
     imagePosition: 'left-top',
     technologies: ['B2B', 'B2C', 'Oil & Gas', 'Enterprise', 'E-commerce', 'UX/UI'],
     action: { type: 'sidecar', key: 'shell' }
-  },
-  {
-    title: 'Agentic AI EHR for Greenway Health',
-    description: [
-      {
-        label: 'Problem',
-        text: "Clinicians using Greenway Health's EHR were losing time to manual documentation and repetitive administrative work that pulled focus away from patient care."
-      },
-      {
-        label: 'Approach',
-        text: 'Designed agentic AI workflows into the EHR — automating documentation, surfacing clinical decision support at the point of care, and keeping a clinician in the loop on every AI-generated recommendation.'
-      }
-    ],
-    image: 'https://images.unsplash.com/photo-1666886573531-48d2e3c2b684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-    technologies: ['Healthcare', 'AI', 'Agentic AI', 'EHR', 'UX/UI'],
-    action: { type: 'none' },
-    logo: greenwayHealthLogo
   }
 ]
 
@@ -165,7 +175,7 @@ const designSystemProjects = [
       "The component library and token system behind Ciena's platform — built once and reused across every workflow, so new features shipped consistent by default.",
     image: cienaDesignSystemImage,
     technologies: ['Design Tokens', 'Components', 'Accessibility', 'Documentation'],
-    live: '#'
+    live: 'https://www.figma.com/design/oIjXrPXpqFGf4mX38wuRt1/Design-Systems?node-id=2-5412&t=1zAWu8Fhw2s7sNtU-4'
   },
   {
     title: 'Simplylife Mobile app design system',
@@ -176,290 +186,200 @@ const designSystemProjects = [
   }
 ]
 
-function ProjectTag({ label }: { label: string }) {
+// Headline KPIs shown on a single line under a project's blurb, keyed by project title.
+const KPIS: Record<string, string[]> = {
+  'Ciena — Real-Time Optical Network Management': [
+    '85% faster network creation',
+    '92% fewer errors & outages',
+    'Satisfaction 4.8 → 8.7 / 10',
+  ],
+}
+
+// One short, plain blurb per featured project (same order as `featuredProjects`).
+const BLURBS = [
+  'Owned 0-to-1 UX strategy and product design for the platform that replaced manual optical network planning.',
+  'Agentic AI workflows inside the EHR: automating documentation and surfacing decision support, with the clinician in the loop on every recommendation.',
+  'Led UX across a bilingual insurance sales site and a health-management app, moving customers from the call center to self-service. Online conversions up 35%, support calls down 28%.',
+  'A mobile experience built around one question: how am I doing? Consolidated portfolios, data visualization and a security-first sign-in flow.',
+  "Unified supply chain, asset management, e-commerce and careers apps across 50+ countries under one design system. 30% more operational efficiency and 40% faster onboarding for 10,000+ users.",
+]
+
+function ProjectBlock({
+  project,
+  index,
+  blurb,
+  onOpenSidecar,
+}: {
+  project: FeaturedProject
+  index: number
+  blurb: string
+  onOpenSidecar: (key: 'ciena' | 'bupa' | 'shell') => void
+}) {
+  const flipped = index % 2 === 1
+  const action = project.action
+
   return (
-    <span className="px-3 py-1 text-xs text-indigo-400 rounded-full bg-indigo-400/10">
-      {label}
-    </span>
+    <article className="grid lg:grid-cols-12 gap-x-12 gap-y-10 items-end py-16 md:py-28">
+      <div className={`lg:col-span-4 ${flipped ? 'lg:col-start-9 lg:order-2' : 'lg:col-start-1'}`}>
+        <FadeUp>
+          <p className="font-mono text-xs text-[var(--text-faint)] mb-6">{String(index + 1).padStart(2, '0')}</p>
+        </FadeUp>
+        <h2 className="font-display font-light text-[clamp(1.9rem,3vw,2.75rem)] leading-[1.08] text-[var(--ink)]">
+          <RiseText>{project.title}</RiseText>
+        </h2>
+        <FadeUp delay={0.15}>
+          <p className="text-base text-[var(--text-muted)] leading-relaxed mt-6 max-w-[44ch]">{blurb}</p>
+          {KPIS[project.title] && (
+            <ul className="mt-5 flex flex-wrap lg:flex-nowrap gap-x-4 gap-y-1 text-[13px] text-[var(--ink)] lg:whitespace-nowrap">
+              {KPIS[project.title].map((kpi, i) => (
+                <li key={kpi} className="flex items-center gap-4">
+                  {i > 0 && <span aria-hidden className="h-3 w-px bg-[var(--line-strong)]" />}
+                  {kpi}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="text-xs text-[var(--text-faint)] mt-5">{project.technologies.join(' · ')}</p>
+
+          {action.type === 'sidecar' && (
+            <button
+              onClick={() => onOpenSidecar(action.key)}
+              className="cursor-pointer group mt-8 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-[var(--ink)] text-white text-sm transition-colors duration-200 hover:bg-[#3a3a3a]"
+            >
+              See case study
+              <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </button>
+          )}
+
+          {action.type === 'dropdown' && (
+            <div className="mt-8 flex flex-wrap gap-3">
+              {action.links.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer group inline-flex items-center gap-2 h-11 px-6 rounded-full border border-[var(--ink)] text-[var(--ink)] text-sm transition-colors duration-200 hover:bg-[var(--ink)] hover:text-white"
+                >
+                  {link.label}
+                  <ArrowUpRight className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
+          )}
+        </FadeUp>
+      </div>
+
+      <div className={`lg:col-span-7 ${flipped ? 'lg:col-start-1 lg:order-1' : 'lg:col-start-6'}`}>
+        <div className="relative">
+          <ParallaxImage
+            src={project.image}
+            alt={project.title}
+            position={project.imagePosition === 'left-top' ? 'object-left-top' : 'object-center'}
+            className="aspect-[16/10]"
+          />
+          {project.logo && (
+            <div className="absolute bottom-0 left-0 bg-white px-6 py-4">
+              <img
+                src={typeof project.logo === 'string' ? project.logo : project.logo.src}
+                alt={`${project.title} logo`}
+                className="h-10 w-auto object-contain"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  )
+}
+
+function ArchiveList({ title, items }: { title: string; items: { name: string; text: string; href?: string; linkLabel?: string }[] }) {
+  return (
+    <div>
+      <FadeUp>
+        <h3 className="font-display font-light text-3xl md:text-4xl text-[var(--ink)] mb-10">{title}</h3>
+      </FadeUp>
+      <ul className="border-t border-[var(--line-strong)]">
+        {items.map((item) => {
+          const inner = (
+            <>
+              <div className="min-w-0">
+                <p className="text-lg text-[var(--ink)]">{item.name}</p>
+                <p className="text-[15px] text-[var(--text-muted)] leading-relaxed mt-2 max-w-[52ch]">{item.text}</p>
+              </div>
+              {item.href && (
+                <span className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full border border-[var(--ink)] text-sm text-[var(--ink)] whitespace-nowrap transition-colors duration-200 group-hover:bg-[var(--ink)] group-hover:text-white">
+                  {item.linkLabel ?? 'View'}
+                  <ArrowUpRight className="w-4 h-4" />
+                </span>
+              )}
+            </>
+          )
+          const cls = 'group flex items-start justify-between gap-8 py-7 border-b border-[var(--line)]'
+          return (
+            <li key={item.name}>
+              {item.href ? (
+                <a href={item.href} target="_blank" rel="noopener noreferrer" className={`${cls} cursor-pointer`}>
+                  {inner}
+                </a>
+              ) : (
+                <div className={cls}>{inner}</div>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </div>
   )
 }
 
 export function ProjectsSection() {
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
-  const [isCienaSidecarOpen, setIsCienaSidecarOpen] = useState(false)
-  const [isBupaSidecarOpen, setIsBupaSidecarOpen] = useState(false)
-  const [isShellSidecarOpen, setIsShellSidecarOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  const sidecarOpeners: Record<'ciena' | 'bupa' | 'shell', () => void> = {
-    ciena: () => setIsCienaSidecarOpen(true),
-    bupa: () => setIsBupaSidecarOpen(true),
-    shell: () => setIsShellSidecarOpen(true)
-  }
+  const [openSidecar, setOpenSidecar] = useState<'ciena' | 'bupa' | 'shell' | null>(null)
 
   return (
-    <section id="projects" className="py-28 md:py-36 bg-[var(--bg)] border-t border-[var(--line)]">
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE }}
-          viewport={{ once: true, margin: '-100px' }}
-          className="mb-16"
-        >
-          <div className="flex items-center gap-4 mb-6">
-            <span className="font-mono text-sm text-indigo-400">03</span>
-            <span className="h-px w-10 bg-[var(--line-strong)]" />
-            <h2 className="font-display text-3xl md:text-4xl text-[var(--text)]">Selected Work</h2>
-          </div>
-          <p className="text-[var(--text-muted)] max-w-xl">
-            A selection of recent case studies across fintech, healthcare, B2B SaaS and telecom.
-          </p>
-        </motion.div>
-
-        {/* Featured case studies — alternating editorial rows */}
-        <div className="border-t border-[var(--line)]">
-          {featuredProjects.map((project, index) => {
-            const isReversed = index % 2 === 1
-            const isDropdownOpen = openDropdown === project.title
-
-            const imageBlock = (
-              <div className={`relative lg:col-span-7 ${isReversed ? 'lg:order-2' : 'lg:order-1'}`}>
-                <span className="absolute -top-8 -left-1 md:-left-4 font-display text-[110px] md:text-[150px] leading-none text-[var(--text-ghost)] select-none pointer-events-none">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <div className="relative overflow-hidden rounded-3xl bg-[var(--bg-soft)] border border-[var(--line)] shadow-[0_20px_50px_-24px_rgba(20,22,43,0.25)] transition-shadow duration-500 group-hover:shadow-[0_24px_60px_-20px_rgba(79,70,229,0.3)]">
-                  <ImageWithFallback
-                    src={project.image}
-                    alt={project.title}
-                    className={`w-full h-[340px] md:h-[420px] object-cover ${
-                      project.imagePosition === 'left-top' ? 'object-left-top' : 'object-top'
-                    } transition-transform duration-700 group-hover:scale-[1.03]`}
-                  />
-                  {project.logo && (
-                    <div className="absolute bottom-4 left-4 h-[110px] px-[30px] rounded-2xl bg-white/95 shadow-[0_4px_12px_rgba(20,22,43,0.15)] flex items-center backdrop-blur-sm">
-                      <img
-                        src={typeof project.logo === 'string' ? project.logo : project.logo.src}
-                        alt={`${project.title} logo`}
-                        className="h-[60px] w-auto object-contain"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            )
-
-            const textBlock = (
-              <div className={`lg:col-span-5 ${isReversed ? 'lg:order-1' : 'lg:order-2'}`}>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.map((tech) => (
-                    <ProjectTag key={tech} label={tech} />
-                  ))}
-                </div>
-                <h3 className="font-display text-2xl md:text-[28px] text-[var(--text)] mb-4 leading-snug group-hover:text-indigo-400 transition-colors duration-300">
-                  {project.title}
-                </h3>
-                <ul className="space-y-3.5 mb-6">
-                  {project.description.map((item) => (
-                    <li key={item.label} className="text-sm text-[var(--text-muted)] leading-relaxed">
-                      <span className="block text-[10px] uppercase tracking-[0.15em] text-indigo-400 mb-1">
-                        {item.label}
-                      </span>
-                      <span>{item.text}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {project.action.type !== 'none' && (
-                  <div className="relative" ref={isDropdownOpen ? dropdownRef : null}>
-                    <span className="inline-flex items-center gap-2 text-sm text-[var(--text)] group-hover:text-indigo-400 transition-colors duration-300">
-                      {project.action.type === 'dropdown' ? 'View Links' : 'View Case Study'}
-                      <ArrowUpRight className="w-4 h-4" />
-                    </span>
-
-                    {project.action.type === 'dropdown' && isDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        className="absolute top-8 left-0 rounded-lg overflow-hidden z-20 min-w-[150px] border border-[var(--line-strong)] bg-[var(--surface)] shadow-xl"
-                      >
-                        {project.action.links.map((link) => (
-                          <a
-                            key={link.label}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-4 py-3 text-sm text-[var(--text)] hover:bg-indigo-400/10 hover:text-indigo-400 transition-colors duration-200"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {link.label === 'Design' ? <Palette className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                            <span>{link.label}</span>
-                          </a>
-                        ))}
-                      </motion.div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-
-            const rowContent = (
-              <div className="grid lg:grid-cols-12 gap-8 lg:gap-14 items-center">
-                {imageBlock}
-                {textBlock}
-              </div>
-            )
-
-            const rowClasses = 'group py-14 md:py-20 border-b border-[var(--line)] transition-colors duration-300'
-
-            const handleRowClick = () => {
-              if (project.action.type === 'sidecar') sidecarOpeners[project.action.key]()
-              if (project.action.type === 'dropdown') setOpenDropdown(isDropdownOpen ? null : project.title)
-            }
-
-            return (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, y: 44 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: EASE }}
-                viewport={{ once: true, margin: '-80px' }}
-              >
-                {project.action.type === 'none' ? (
-                  <div className={rowClasses}>{rowContent}</div>
-                ) : (
-                  <div onClick={handleRowClick} className={`${rowClasses} cursor-pointer`}>
-                    {rowContent}
-                  </div>
-                )}
-              </motion.div>
-            )
-          })}
+    <section id="projects" className="bg-[var(--bg)]">
+      <div className="max-w-[1480px] mx-auto px-5 md:px-8 lg:px-10">
+        <div className="pt-10 pb-2 border-t border-[var(--line-strong)]">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-faint)] pt-5">Selected work</p>
         </div>
 
-        {/* Design Systems */}
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE }}
-          viewport={{ once: true, margin: '-80px' }}
-          className="mt-28 md:mt-32 mb-10"
-        >
-          <div className="flex items-center gap-4 mb-3">
-            <span className="font-mono text-sm text-indigo-400">03.1</span>
-            <span className="h-px w-10 bg-[var(--line-strong)]" />
-            <h3 className="font-display text-2xl md:text-3xl text-[var(--text)]">Design Systems</h3>
-          </div>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-6 mb-28">
-          {designSystemProjects.map((project, index) => {
-            const clickable = project.live !== '#'
-            const Wrapper = clickable ? motion.a : motion.div
-            return (
-              <Wrapper
-                key={project.title}
-                {...(clickable ? { href: project.live, target: '_blank', rel: 'noopener noreferrer' } : {})}
-                initial={{ opacity: 0, y: 36 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -6 }}
-                transition={{ delay: index * 0.1, duration: 0.6, ease: EASE }}
-                viewport={{ once: true, margin: '-60px' }}
-                className={`group relative rounded-2xl bg-[var(--surface)] border border-[var(--line)] p-6 flex flex-col shadow-[0_8px_24px_-16px_rgba(20,22,43,0.15)] hover:shadow-[0_20px_40px_-16px_rgba(79,70,229,0.25)] transition-shadow duration-500 ${clickable ? 'cursor-pointer' : ''}`}
-              >
-                <div className="relative overflow-hidden rounded-xl mb-5">
-                  <ImageWithFallback
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-40 object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                  />
-                  {clickable && (
-                    <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center text-white group-hover:bg-indigo-400 group-hover:text-black transition-all duration-300">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                </div>
-                <h4 className="text-[var(--text)] mb-2 group-hover:text-indigo-400 transition-colors duration-300">
-                  {project.title}
-                </h4>
-                <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-4 flex-1">{project.description}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {project.technologies.map((tech) => (
-                    <ProjectTag key={tech} label={tech} />
-                  ))}
-                </div>
-              </Wrapper>
-            )
-          })}
-        </div>
-
-        {/* Additional Work */}
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE }}
-          viewport={{ once: true, margin: '-80px' }}
-          className="mb-6"
-        >
-          <div className="flex items-center gap-4 mb-3">
-            <span className="font-mono text-sm text-indigo-400">03.2</span>
-            <span className="h-px w-10 bg-[var(--line-strong)]" />
-            <h3 className="font-display text-2xl md:text-3xl text-[var(--text)]">Additional Work</h3>
-          </div>
-          <p className="text-[var(--text-muted)] max-w-xl">
-            Real work worth mentioning, without a full case study behind it.
-          </p>
-        </motion.div>
-
-        <div className="border-t border-[var(--line)]">
-          {additionalWork.map((item, index) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.08, duration: 0.5, ease: EASE }}
-              viewport={{ once: true, margin: '-40px' }}
-              className="py-6 border-b border-[var(--line)] flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-8"
-            >
-              <h4 className="text-[var(--text)] sm:w-64 flex-shrink-0">{item.title}</h4>
-              <div className="flex-1">
-                <p className="text-sm text-[var(--text-muted)] leading-relaxed">{item.description}</p>
-                {item.links && (
-                  <div className="flex flex-wrap gap-5 mt-3">
-                    {item.links.map((link) => (
-                      <a
-                        key={link.label}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-500 transition-colors duration-200"
-                      >
-                        {link.label}
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </motion.div>
+        <div>
+          {featuredProjects.map((project, i) => (
+            <ProjectBlock
+              key={project.title}
+              project={project}
+              index={i}
+              blurb={BLURBS[i] ?? ''}
+              onOpenSidecar={setOpenSidecar}
+            />
           ))}
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-x-16 gap-y-20 pt-16 md:pt-24 pb-24 md:pb-36 border-t border-[var(--line-strong)]">
+          <ArchiveList
+            title="Design systems"
+            items={designSystemProjects.map((d) => ({
+              name: d.title,
+              text: d.description,
+              href: d.live !== '#' ? d.live : undefined,
+              linkLabel: 'View',
+            }))}
+          />
+          <ArchiveList
+            title="Additional work"
+            items={additionalWork.map((w) => ({
+              name: w.title,
+              text: w.description,
+              href: w.links?.[0]?.url,
+              linkLabel: w.links?.[0]?.label,
+            }))}
+          />
         </div>
       </div>
 
-      <CienaCaseStudySidecar isOpen={isCienaSidecarOpen} onClose={() => setIsCienaSidecarOpen(false)} />
-      <BupaCaseStudySidecar isOpen={isBupaSidecarOpen} onClose={() => setIsBupaSidecarOpen(false)} />
-      <ShellCaseStudySidecar isOpen={isShellSidecarOpen} onClose={() => setIsShellSidecarOpen(false)} />
+      <CienaCaseStudySidecar isOpen={openSidecar === 'ciena'} onClose={() => setOpenSidecar(null)} />
+      <BupaCaseStudySidecar isOpen={openSidecar === 'bupa'} onClose={() => setOpenSidecar(null)} />
+      <ShellCaseStudySidecar isOpen={openSidecar === 'shell'} onClose={() => setOpenSidecar(null)} />
     </section>
   )
 }
