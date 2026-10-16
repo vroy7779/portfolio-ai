@@ -1,6 +1,7 @@
 'use client'
 
-import { ArrowUpRight } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { ArrowUpRight, Plus } from 'lucide-react'
 import type { StaticImageData } from 'next/image'
 import { useState } from 'react'
 import { CienaCaseStudySidecar } from '@/components/case-study/CienaCaseStudySidecar'
@@ -38,7 +39,7 @@ interface FeaturedProject {
 
 const featuredProjects: FeaturedProject[] = [
   {
-    title: 'Ciena — Real-Time Optical Network Management',
+    title: 'Ciena — Agentic AI Network Planning',
     description: [
       {
         label: 'Problem',
@@ -186,9 +187,76 @@ const designSystemProjects = [
   }
 ]
 
+// Longer write-ups of current work, shown behind a disclosure so the blocks stay quiet.
+const CURRENT_WORK: Record<string, { heading: string; paragraphs: string[] }> = {
+  'Ciena — Agentic AI Network Planning': {
+    heading: 'Network planning software',
+    paragraphs: [
+      "At Ciena, I've worked on network planning software that helps telecom operators create, manage, and optimise their networks. It's a highly technical domain, with users dealing with network topology, capacity, traffic demand, infrastructure constraints, and performance requirements. The UX challenge is making all of this manageable without oversimplifying the work. My focus has been on how users navigate complex planning tasks, understand the information in front of them, and make informed decisions.",
+      "With agentic AI, the experience also needs to account for how intelligent capabilities fit into the planning process. That means thinking beyond the interface itself: how users interact with AI-assisted workflows, understand the outputs, and remain in control of decisions that affect their networks. It's a very different design challenge from simply presenting data on a dashboard.",
+    ],
+  },
+  'Agentic AI EHR for Greenway Health': {
+    heading: 'AI-Enabled EHR',
+    paragraphs: [
+      "At Greenway Health, I've worked on an AI-enabled EHR product that captures doctor-patient conversations and supports the workflows that follow, including medications, tests, procedures, patient records, and ongoing communication between doctors and patients.",
+      'The interesting UX challenge is connecting the conversation to the broader care journey. Capturing what was said is only one part of the problem; the information needs to support clinical workflows and help keep doctors and patients aligned. The experience also considers patient behaviour and follow-up, helping patients stay on track with medication, dietary guidance, and care plans. Designing this requires understanding the needs of both clinicians and patients and making sure AI supports their workflows rather than adding another layer of complexity.',
+    ],
+  },
+}
+
+function CurrentWork({ title }: { title: string }) {
+  const [open, setOpen] = useState(false)
+  const note = CURRENT_WORK[title]
+  if (!note) return null
+
+  return (
+    <div className="mt-8 border-t border-[var(--line-strong)] max-w-[52ch]">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="cursor-pointer group flex w-full items-center justify-between gap-4 py-4 text-left"
+      >
+        <span>
+          <span className="block text-[11px] uppercase tracking-[0.15em] text-[var(--text-faint)]">Current work</span>
+          <span className="block text-[15px] text-[var(--ink)] mt-1">{note.heading}</span>
+        </span>
+        <span
+          aria-hidden
+          className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-[var(--line-strong)] transition-[transform,background-color,color] duration-300 group-hover:bg-[var(--ink)] group-hover:text-white ${
+            open ? 'rotate-45' : ''
+          }`}
+        >
+          <Plus className="h-4 w-4" />
+        </span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-4 pb-5">
+              {note.paragraphs.map((para) => (
+                <p key={para.slice(0, 24)} className="text-[15px] text-[var(--text-muted)] leading-relaxed">
+                  {para}
+                </p>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {!open && <div className="border-b border-[var(--line)]" />}
+    </div>
+  )
+}
+
 // Headline KPIs shown on a single line under a project's blurb, keyed by project title.
 const KPIS: Record<string, string[]> = {
-  'Ciena — Real-Time Optical Network Management': [
+  'Ciena — Agentic AI Network Planning': [
     '85% faster network creation',
     '92% fewer errors & outages',
     'Satisfaction 4.8 → 8.7 / 10',
@@ -267,6 +335,9 @@ function ProjectBlock({
               ))}
             </div>
           )}
+        </FadeUp>
+        <FadeUp delay={0.2}>
+          <CurrentWork title={project.title} />
         </FadeUp>
       </div>
 
