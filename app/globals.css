@@ -153,10 +153,17 @@
   }
 }
 
+/* Display face. Tight tracking is only for large sizes (see .tracking-display-*),
+   small headings keep normal spacing. */
 .font-display {
   font-family: var(--font-archivo), system-ui, sans-serif;
   font-weight: 400;
-  letter-spacing: -0.035em;
+}
+.tracking-display-lg {
+  letter-spacing: -0.03em;
+}
+.tracking-display-md {
+  letter-spacing: -0.02em;
 }
 
 /* Visible keyboard focus everywhere (a11y: focus-states) */
@@ -164,11 +171,6 @@
   outline: 2px solid var(--ink);
   outline-offset: 3px;
   border-radius: 6px;
-}
-
-/* Scroll-linked reveal helper used by the hero rule */
-.rule-grow {
-  transform-origin: left;
 }
 
 html {
@@ -201,25 +203,6 @@ html.lenis.lenis-stopped {
 ::selection {
   background: var(--ink);
   color: #ffffff;
-}
-
-/* Auto-scrolling tool marquee */
-@keyframes marquee-left {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-@keyframes marquee-right {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
-}
-.animate-marquee-left {
-  animation: marquee-left 38s linear infinite;
-}
-.animate-marquee-right {
-  animation: marquee-right 42s linear infinite;
-}
-.marquee-row:hover {
-  animation-play-state: paused;
 }
 
 /**

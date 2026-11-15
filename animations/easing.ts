@@ -9,7 +9,7 @@
  * exception is the case-study panel's surface-entrance spring (damping 32,
  * stiffness 300), reserved exclusively for large surfaces entering the screen.
  */
-export const EASE = [0.16, 1, 0.3, 1] as const
+export const EASE = [0.22, 1, 0.36, 1] as const
 
 /**
  * A JS easing function visually equivalent to `EASE` above, for libraries (Lenis)

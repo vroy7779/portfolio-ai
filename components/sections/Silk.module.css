@@ -1,0 +1,15 @@
+/* The hero silk: a still image always underneath, the live WebGL canvas fades in over it. */
+.silk { position: absolute; z-index: 1; top: 0; bottom: 0; right: 0; left: 50%; }
+.still, .canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; max-width: none; }
+.still { object-fit: cover; object-position: right center; transition: opacity var(--e-duration-slow) var(--e-ease-out); }
+.canvas { opacity: 0; transition: opacity 1200ms var(--e-ease-out); }
+.live .canvas { opacity: 1; }
+.live .still { opacity: 0; }
+.noWebgl .canvas { display: none; }
+
+@media (max-width: 960px) {
+  .silk { position: relative; inset: auto; height: clamp(280px, 52vw, 420px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .still, .canvas { transition: none; }
+}

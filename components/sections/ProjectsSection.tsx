@@ -4,24 +4,26 @@ import { AnimatePresence, motion } from 'motion/react'
 import { ArrowUpRight, Plus } from 'lucide-react'
 import type { StaticImageData } from 'next/image'
 import { useState } from 'react'
-import { CienaCaseStudySidecar } from '@/components/case-study/CienaCaseStudySidecar'
-import { BupaCaseStudySidecar } from '@/components/case-study/BupaCaseStudySidecar'
+import Link from 'next/link'
 import { ShellCaseStudySidecar } from '@/components/case-study/ShellCaseStudySidecar'
-import cienaImage from '@/assets/3163b42380ed0bf50edb19eae0d2592a4c6aeb2b.png'
+import cienaImage from '@/assets/ciena-card.png'
 import bupaImage from '@/assets/2ba33c085c98d8c0e6ba8d03d433fd4f6cea2c45.png'
 import wealthManagementImage from '@/assets/34e612c38fefa484fe0ead49bed826b5c96d5fc6.png'
 import cienaDesignSystemImage from '@/assets/85bdecb474ed5e0fe5da702b77e01ab98b34f80e.png'
 import simplylifeDesignSystemImage from '@/assets/6dd04533e27478f2c5be34374efd8e8d9727127b.png'
 import shellImage from '@/assets/b15d4a876e4af15635c381d5f3539461afef0a0f.png'
 import greenwayHealthLogo from '@/assets/gw.png'
-import { ParallaxImage } from '@/components/motion/ParallaxImage'
+import { ImageWithFallback } from '@/components/figma/ImageWithFallback'
+import { TiltCard } from '@/components/motion/TiltCard'
+import { EASE } from '@/animations/easing'
 import { RiseText } from '@/components/motion/RiseText'
 import { FadeUp } from '@/components/motion/FadeUp'
 
 
 
 type ProjectAction =
-  | { type: 'sidecar'; key: 'ciena' | 'bupa' | 'shell' }
+  | { type: 'sidecar'; key: 'shell' }
+  | { type: 'page'; href: string }
   | { type: 'dropdown'; links: { label: string; url: string }[] }
   | { type: 'none' }
 
@@ -32,6 +34,8 @@ interface FeaturedProject {
   description: { label: string; text: string }[]
   image: ImageSrc
   imagePosition?: 'left-top' | 'center'
+  /** False when the image carries branding near its edges that the hover zoom would clip. */
+  tiltParallax?: boolean
   technologies: string[]
   action: ProjectAction
   logo?: ImageSrc
@@ -55,8 +59,9 @@ const featuredProjects: FeaturedProject[] = [
       }
     ],
     image: cienaImage,
+    tiltParallax: false,
     technologies: ['B2B SaaS', 'AI Agent', 'Dashboard', 'UX/UI', 'Telecommunication'],
-    action: { type: 'sidecar', key: 'ciena' }
+    action: { type: 'page', href: '/work/ciena' }
   },
   {
     title: 'Agentic AI EHR for Greenway Health',
@@ -102,7 +107,7 @@ const featuredProjects: FeaturedProject[] = [
     ],
     image: bupaImage,
     technologies: ['Healthcare', 'B2C', 'Mobile App', 'Insurance', 'UX/UI'],
-    action: { type: 'sidecar', key: 'bupa' }
+    action: { type: 'page', href: '/work/bupa' }
   },
   {
     title: 'Wealth and Investment management Mobile App',
@@ -157,14 +162,9 @@ interface AdditionalWorkItem {
 
 const additionalWork: AdditionalWorkItem[] = [
   {
-    title: 'Medicus.ai',
-    description:
-      'AI-native product design closing the health-literacy gap: using AI to translate clinical lab data into visualizations and plain-language explanations, designed for accessibility as much as clinical accuracy.'
-  },
-  {
     title: 'PayPal Business (Self-Directed Redesign)',
     description:
-      'Restructured the information architecture around three core jobs-to-be-done — get paid, track sales, understand customers — through user research with merchants and a streamlined interaction model.',
+      'Restructured the information architecture around three core jobs-to-be-done — get paid, track sales, understand customers — through user research with merchants and a streamlined interaction model',
     links: [{ label: 'Behance', url: 'https://www.behance.net/gallery/169523163/Paypal-Business-App' }]
   }
 ]
@@ -173,14 +173,14 @@ const designSystemProjects = [
   {
     title: "Ciena's SaaS Design System",
     description:
-      "The component library and token system behind Ciena's platform — built once and reused across every workflow, so new features shipped consistent by default.",
+      "The component library and token system behind Ciena's platform — built once and reused across every workflow, so new features shipped consistent by default",
     image: cienaDesignSystemImage,
     technologies: ['Design Tokens', 'Components', 'Accessibility', 'Documentation'],
     live: 'https://www.figma.com/design/oIjXrPXpqFGf4mX38wuRt1/Design-Systems?node-id=2-5412&t=1zAWu8Fhw2s7sNtU-4'
   },
   {
     title: 'Simplylife Mobile app design system',
-    description: 'Component library and design patterns for healthcare applications, ensuring HIPAA compliance and accessibility standards.',
+    description: 'Component library and design patterns for healthcare applications, ensuring HIPAA compliance and accessibility standards',
     image: simplylifeDesignSystemImage,
     technologies: ['Components', 'Healthcare', 'HIPAA', 'Patterns'],
     live: 'https://xd.adobe.com/view/e6dfd4da-8735-4b27-a2ff-582f6dab3570-b38c/screen/c35951e0-5c51-45ae-b34b-627e6fe1e6d0?fullscreen'
@@ -189,13 +189,6 @@ const designSystemProjects = [
 
 // Longer write-ups of current work, shown behind a disclosure so the blocks stay quiet.
 const CURRENT_WORK: Record<string, { heading: string; paragraphs: string[] }> = {
-  'Ciena — Agentic AI Network Planning': {
-    heading: 'Network planning software',
-    paragraphs: [
-      "At Ciena, I've worked on network planning software that helps telecom operators create, manage, and optimise their networks. It's a highly technical domain, with users dealing with network topology, capacity, traffic demand, infrastructure constraints, and performance requirements. The UX challenge is making all of this manageable without oversimplifying the work. My focus has been on how users navigate complex planning tasks, understand the information in front of them, and make informed decisions.",
-      "With agentic AI, the experience also needs to account for how intelligent capabilities fit into the planning process. That means thinking beyond the interface itself: how users interact with AI-assisted workflows, understand the outputs, and remain in control of decisions that affect their networks. It's a very different design challenge from simply presenting data on a dashboard.",
-    ],
-  },
   'Agentic AI EHR for Greenway Health': {
     heading: 'AI-Enabled EHR',
     paragraphs: [
@@ -218,7 +211,7 @@ function CurrentWork({ title }: { title: string }) {
         className="cursor-pointer group flex w-full items-center justify-between gap-4 py-4 text-left"
       >
         <span>
-          <span className="block text-[11px] uppercase tracking-[0.15em] text-[var(--text-faint)]">Current work</span>
+          <span className="block text-xs text-[var(--text-faint)]">Current work</span>
           <span className="block text-[15px] text-[var(--ink)] mt-1">{note.heading}</span>
         </span>
         <span
@@ -233,11 +226,10 @@ function CurrentWork({ title }: { title: string }) {
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: EASE }}
           >
             <div className="space-y-4 pb-5">
               {note.paragraphs.map((para) => (
@@ -265,10 +257,10 @@ const KPIS: Record<string, string[]> = {
 
 // One short, plain blurb per featured project (same order as `featuredProjects`).
 const BLURBS = [
-  'Owned 0-to-1 UX strategy and product design for the platform that replaced manual optical network planning.',
-  'Agentic AI workflows inside the EHR: automating documentation and surfacing decision support, with the clinician in the loop on every recommendation.',
+  'Owned 0-to-1 UX strategy and product design for the platform that replaced manual optical network planning',
+  'Agentic AI workflows inside the EHR: automating documentation and surfacing decision support, with the clinician in the loop on every recommendation',
   'Led UX across a bilingual insurance sales site and a health-management app, moving customers from the call center to self-service. Online conversions up 35%, support calls down 28%.',
-  'A mobile experience built around one question: how am I doing? Consolidated portfolios, data visualization and a security-first sign-in flow.',
+  'A mobile experience built around one question: how am I doing? Consolidated portfolios, data visualization and a security-first sign-in flow',
   "Unified supply chain, asset management, e-commerce and careers apps across 50+ countries under one design system. 30% more operational efficiency and 40% faster onboarding for 10,000+ users.",
 ]
 
@@ -281,7 +273,7 @@ function ProjectBlock({
   project: FeaturedProject
   index: number
   blurb: string
-  onOpenSidecar: (key: 'ciena' | 'bupa' | 'shell') => void
+  onOpenSidecar: (key: 'shell') => void
 }) {
   const flipped = index % 2 === 1
   const action = project.action
@@ -292,18 +284,15 @@ function ProjectBlock({
         <FadeUp>
           <p className="font-mono text-xs text-[var(--text-faint)] mb-6">{String(index + 1).padStart(2, '0')}</p>
         </FadeUp>
-        <h2 className="font-display font-light text-[clamp(1.9rem,3vw,2.75rem)] leading-[1.08] text-[var(--ink)]">
+        <h2 className="font-display tracking-display-md text-[clamp(1.9rem,3vw,2.75rem)] leading-[1.08] text-[var(--ink)]">
           <RiseText>{project.title}</RiseText>
         </h2>
         <FadeUp delay={0.15}>
           <p className="text-base text-[var(--text-muted)] leading-relaxed mt-6 max-w-[44ch]">{blurb}</p>
           {KPIS[project.title] && (
-            <ul className="mt-5 flex flex-wrap lg:flex-nowrap gap-x-4 gap-y-1 text-[13px] text-[var(--ink)] lg:whitespace-nowrap">
-              {KPIS[project.title].map((kpi, i) => (
-                <li key={kpi} className="flex items-center gap-4">
-                  {i > 0 && <span aria-hidden className="h-3 w-px bg-[var(--line-strong)]" />}
-                  {kpi}
-                </li>
+            <ul className="mt-5 space-y-1 text-[13px] text-[var(--ink)]">
+              {KPIS[project.title].map((kpi) => (
+                <li key={kpi}>{kpi}</li>
               ))}
             </ul>
           )}
@@ -312,11 +301,21 @@ function ProjectBlock({
           {action.type === 'sidecar' && (
             <button
               onClick={() => onOpenSidecar(action.key)}
-              className="cursor-pointer group mt-8 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-[var(--ink)] text-white text-sm transition-colors duration-200 hover:bg-[#3a3a3a]"
+              className="cursor-pointer group mt-8 inline-flex items-center gap-2 h-12 px-8 rounded-full bg-[var(--ink)] text-white text-sm transition-colors duration-200 hover:bg-[#3a3a3a]"
             >
               See case study
               <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
+          )}
+
+          {action.type === 'page' && (
+            <Link
+              href={action.href}
+              className="cursor-pointer group mt-8 inline-flex items-center gap-2 h-12 px-8 rounded-full bg-[var(--ink)] text-white text-sm transition-colors duration-200 hover:bg-[#3a3a3a]"
+            >
+              See case study
+              <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
           )}
 
           {action.type === 'dropdown' && (
@@ -327,7 +326,7 @@ function ProjectBlock({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="cursor-pointer group inline-flex items-center gap-2 h-11 px-6 rounded-full border border-[var(--ink)] text-[var(--ink)] text-sm transition-colors duration-200 hover:bg-[var(--ink)] hover:text-white"
+                  className="cursor-pointer group inline-flex items-center gap-2 h-12 px-8 rounded-full border border-[var(--ink)] text-[var(--ink)] text-sm transition-colors duration-200 hover:bg-[var(--ink)] hover:text-white"
                 >
                   {link.label}
                   <ArrowUpRight className="w-4 h-4" />
@@ -343,12 +342,17 @@ function ProjectBlock({
 
       <div className={`lg:col-span-7 ${flipped ? 'lg:col-start-1 lg:order-1' : 'lg:col-start-6'}`}>
         <div className="relative">
-          <ParallaxImage
-            src={project.image}
-            alt={project.title}
-            position={project.imagePosition === 'left-top' ? 'object-left-top' : 'object-center'}
-            className="aspect-[16/10]"
-          />
+          <FadeUp>
+            <TiltCard className="aspect-[16/10]" parallax={project.tiltParallax !== false}>
+              <ImageWithFallback
+                src={project.image}
+                alt={project.title}
+                className={`w-full h-full object-cover ${
+                  project.imagePosition === 'left-top' ? 'object-left-top' : 'object-center'
+                }`}
+              />
+            </TiltCard>
+          </FadeUp>
           {project.logo && (
             <div className="absolute bottom-0 left-0 bg-white px-6 py-4">
               <img
@@ -368,7 +372,7 @@ function ArchiveList({ title, items }: { title: string; items: { name: string; t
   return (
     <div>
       <FadeUp>
-        <h3 className="font-display font-light text-3xl md:text-4xl text-[var(--ink)] mb-10">{title}</h3>
+        <h3 className="font-display text-3xl md:text-4xl text-[var(--ink)] mb-10">{title}</h3>
       </FadeUp>
       <ul className="border-t border-[var(--line-strong)]">
         {items.map((item) => {
@@ -379,7 +383,7 @@ function ArchiveList({ title, items }: { title: string; items: { name: string; t
                 <p className="text-[15px] text-[var(--text-muted)] leading-relaxed mt-2 max-w-[52ch]">{item.text}</p>
               </div>
               {item.href && (
-                <span className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full border border-[var(--ink)] text-sm text-[var(--ink)] whitespace-nowrap transition-colors duration-200 group-hover:bg-[var(--ink)] group-hover:text-white">
+                <span className="inline-flex items-center gap-2 h-10 px-5 rounded-full border border-[var(--ink)] text-sm text-[var(--ink)] whitespace-nowrap transition-colors duration-200 group-hover:bg-[var(--ink)] group-hover:text-white">
                   {item.linkLabel ?? 'View'}
                   <ArrowUpRight className="w-4 h-4" />
                 </span>
@@ -405,13 +409,13 @@ function ArchiveList({ title, items }: { title: string; items: { name: string; t
 }
 
 export function ProjectsSection() {
-  const [openSidecar, setOpenSidecar] = useState<'ciena' | 'bupa' | 'shell' | null>(null)
+  const [openSidecar, setOpenSidecar] = useState<'shell' | null>(null)
 
   return (
     <section id="projects" className="bg-[var(--bg)]">
       <div className="max-w-[1480px] mx-auto px-5 md:px-8 lg:px-10">
         <div className="pt-10 pb-2 border-t border-[var(--line-strong)]">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-faint)] pt-5">Selected work</p>
+          <p className="font-mono text-xs text-[var(--text-faint)] pt-5">Selected work</p>
         </div>
 
         <div>
@@ -448,8 +452,6 @@ export function ProjectsSection() {
         </div>
       </div>
 
-      <CienaCaseStudySidecar isOpen={openSidecar === 'ciena'} onClose={() => setOpenSidecar(null)} />
-      <BupaCaseStudySidecar isOpen={openSidecar === 'bupa'} onClose={() => setOpenSidecar(null)} />
       <ShellCaseStudySidecar isOpen={openSidecar === 'shell'} onClose={() => setOpenSidecar(null)} />
     </section>
   )

@@ -1,0 +1,38 @@
+/* Hero: words on white at left, silk ribbons sweeping down the right. Ported from the approved Direction E mockup. */
+.hero {
+  position: relative;
+  padding-top: var(--e-topbar-height);
+  background: var(--e-color-bg); color: var(--e-color-text);
+  font-family: var(--e-font-sans); font-size: var(--e-text-base); line-height: var(--e-leading-normal); letter-spacing: var(--e-tracking-normal);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+.main { position: relative; display: flex; align-items: center; min-height: clamp(560px, calc(100svh - var(--e-topbar-height) - 150px), 780px); overflow: hidden; }
+.grid { position: relative; z-index: 2; padding-block: var(--e-space-10); width: 100%; }
+/* the words never reach the right half, where the silk lives */
+/* the words get three of the four columns; the silk sweeps in behind the right edge */
+.copy { grid-column: span 3; }
+.headline { font-size: clamp(2.5rem, 1.6rem + 2.4vw, 3.5rem); max-width: min(15em, 54vw); }
+h1.headline { font-weight: var(--e-weight-regular); }
+.headline strong { font-weight: 700; color: var(--e-color-text-subtle); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--e-space-3); margin-top: var(--e-space-8); }
+
+.strip { position: relative; z-index: 1; }
+.strip > * { padding-block: var(--e-space-7) var(--e-space-8); }
+.practice { display: grid; gap: var(--e-space-2); font-size: var(--e-text-sm); align-content: center; margin: 0; padding-block: 0; padding-inline: var(--e-space-6); list-style: none; }
+.practice li:first-child { font-weight: var(--e-weight-semibold); }
+.practice li + li { color: var(--e-color-text-muted); }
+.stripWrap { position: relative; }
+
+@media (max-width: 960px) {
+  .headline { max-width: none; }
+  .main { flex-direction: column; align-items: stretch; min-height: 0; }
+  .grid { padding-block: var(--e-space-7) var(--e-space-10); }
+  .copy { grid-column: 1 / -1; }
+  .strip .practice { grid-column: 1 / -1; border-bottom: var(--e-hairline) solid var(--e-color-border); }
+}
+@media (max-width: 640px) {
+  .actions > * { flex: 1 1 auto; }
+  .strip > * + * { border-top: var(--e-hairline) solid var(--e-color-border); }
+  .strip > * { padding-block: var(--e-space-6); }
+  .strip .practice { border-bottom: 0; padding-inline: var(--e-space-4); }
+}

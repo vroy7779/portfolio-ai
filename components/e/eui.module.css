@@ -1,0 +1,75 @@
+/* Direction E shared building blocks, ported from the approved mockup (components.css).
+   Local class names only; every value comes from the --e-* tokens in app/e-tokens.css. */
+
+.container { width: 100%; max-width: var(--e-content-max); margin-inline: auto; padding-inline: var(--e-gutter); }
+
+/* Column guides: four equal hairline columns inside the content width. Put one inside any position:relative block. */
+.guides { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.guides::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+  width: calc(min(var(--e-content-max), 100%) - 2 * var(--e-gutter)); transform: translateX(-50%);
+  background-image: linear-gradient(90deg, var(--e-guide-color, var(--e-color-border)) 0 1px, transparent 1px);
+  background-size: 25% 100%;
+  border-right: var(--e-hairline) solid var(--e-guide-color, var(--e-color-border));
+}
+@media (max-width: 960px) { .guides::before { background-size: 50% 100%; } }
+@media (max-width: 640px) { .guides::before { background-size: 100% 100%; } }
+
+/* The four-column grid the content snaps to (matches the guides). */
+.cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cols > * { padding-inline: var(--e-space-6); min-width: 0; }
+.span2 { grid-column: span 2; }
+@media (max-width: 960px) { .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .cols > * { padding-inline: var(--e-space-4); grid-column: 1 / -1; }
+}
+
+.ruleX { position: relative; z-index: 1; height: var(--e-hairline); background: var(--e-color-border); border: 0; margin: 0; }
+
+/* Buttons: pill, 48 large / 40 small, primary filled ink, secondary outlined. */
+.btn {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-space-2);
+  height: var(--e-control-lg); padding-inline: var(--e-space-6);
+  border-radius: var(--e-radius-full); border: var(--e-hairline) solid transparent;
+  font-family: var(--e-font-sans); font-size: var(--e-text-base); font-weight: var(--e-weight-medium); line-height: 1; white-space: nowrap;
+  cursor: pointer; text-decoration: none;
+  transition: background-color var(--e-duration-fast) var(--e-ease-standard), color var(--e-duration-fast) var(--e-ease-standard), border-color var(--e-duration-fast) var(--e-ease-standard), transform var(--e-duration-fast) var(--e-ease-standard);
+}
+.btn:active { transform: scale(0.98); }
+.btn:focus-visible { outline: 2px solid var(--e-color-focus); outline-offset: 3px; border-radius: var(--e-radius-full); }
+.btnSm { height: var(--e-control-sm); padding-inline: var(--e-space-5); font-size: var(--e-text-sm); }
+.btnPrimary { background: var(--e-color-ink); color: var(--e-color-on-ink); }
+.btnPrimary:hover { background: var(--e-color-ink-hover); }
+.btnSecondary { background: transparent; color: var(--e-color-text); border-color: var(--e-color-text); }
+.btnSecondary:hover { background: var(--e-color-text); color: var(--e-color-on-ink); }
+
+.btnIcon {
+  display: inline-grid; place-items: center; flex: none;
+  width: var(--e-control-sm); height: var(--e-control-sm); border-radius: var(--e-radius-full);
+  border: var(--e-hairline) solid var(--e-color-text); color: var(--e-color-text); background: transparent; cursor: pointer;
+  transition: background-color var(--e-duration-fast) var(--e-ease-standard), color var(--e-duration-fast) var(--e-ease-standard), transform var(--e-duration-fast) var(--e-ease-standard);
+}
+.btnIcon:hover { background: var(--e-color-text); color: var(--e-color-on-ink); }
+.btnIcon:active { transform: scale(0.96); }
+.btnIcon:focus-visible { outline: 2px solid var(--e-color-focus); outline-offset: 3px; }
+.btnIcon svg { width: 18px; height: 18px; }
+
+/* Type */
+.display { font-family: var(--e-font-display); font-size: var(--e-text-3xl); line-height: var(--e-leading-tight); letter-spacing: var(--e-tracking-display); font-weight: var(--e-weight-semibold); text-wrap: balance; margin: 0; }
+
+/* Stat */
+.stat { display: grid; gap: var(--e-space-2); align-content: start; }
+.statNum { font-size: var(--e-text-stat); line-height: 1; font-weight: var(--e-weight-semibold); letter-spacing: var(--e-tracking-display); font-variant-numeric: tabular-nums lining-nums; }
+.statLabel { font-size: var(--e-text-sm); color: var(--e-color-text-muted); max-width: 22ch; }
+
+/* Reveal once (the component adds revealIn when the element scrolls into view) */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity var(--e-duration-slow) var(--e-ease-out), transform var(--e-duration-slow) var(--e-ease-out); transition-delay: var(--e-reveal-delay, 0ms); }
+.revealIn { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .btn, .btnIcon { transition-duration: 1ms; }
+  .btn:active, .btnIcon:active { transform: none; }
+}

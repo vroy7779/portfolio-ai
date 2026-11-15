@@ -204,15 +204,16 @@ export function CaseStudyPanel({
                   <SectionLabel n={numberFor('outcome')} title="Outcome" />
 
                   {stats && stats.length > 0 && (
+                    // One row: a column per stat (up to 4), so outcomes never wrap to a second line.
                     <dl
                       className="mt-6 grid border-t border-[var(--line-strong)]"
-                      style={{ gridTemplateColumns: `repeat(${Math.min(stats.length, 3)}, minmax(0, 1fr))` }}
+                      style={{ gridTemplateColumns: `repeat(${Math.min(stats.length, 4)}, minmax(0, 1fr))` }}
                     >
                       {stats.map((stat, i) => (
                         <div
                           key={stat.label}
-                          className={`py-6 pr-4 ${i % 3 !== 0 ? 'pl-5 border-l border-[var(--line)]' : ''} ${
-                            i >= 3 ? 'border-t border-[var(--line)]' : ''
+                          className={`py-6 pr-4 ${i % 4 !== 0 ? 'pl-4 border-l border-[var(--line)]' : ''} ${
+                            i >= 4 ? 'border-t border-[var(--line)]' : ''
                           }`}
                         >
                           <dd className="font-display text-3xl text-[var(--text)] leading-none">{stat.value}</dd>

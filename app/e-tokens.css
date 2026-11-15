@@ -1,0 +1,126 @@
+/* Direction E tokens, ported from the approved mockup. Every variable is namespaced --e-* so it cannot
+   collide with Tailwind's theme or the existing site variables. */
+/* Direction E: Light with one vivid ribbon.
+   White ground, ink type, visible hairline column guides, and translucent silk ribbons in the hero:
+   periwinkle and lilac through pink and orange to amber and peach.
+   Font: Mona Sans (Google Fonts). Contrast ratios are listed in design/design-system.md, section E.6. */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- Colour: ground and surfaces ---------- */
+  --e-color-bg: #FFFFFF;
+  --e-color-surface: #F5F6F8;          /* image mats, Greenway plate, tag fill */
+  --e-color-surface-raised: #FFFFFF;
+  --e-color-border: #E3E6EB;           /* column guides and row rules */
+  --e-color-border-strong: #C9CED6;    /* frame edge on hover */
+
+  /* ---------- Colour: text ---------- */
+  --e-color-text: #0D1015;             /* ink */
+  --e-color-text-muted: #545C6B;       /* blurbs, labels, tool roles */
+  --e-color-text-subtle: #646C7C;      /* list labels, disabled labels; AA on white and on surface */
+
+  /* ---------- Colour: ink (buttons) ---------- */
+  --e-color-ink: #0D1015;
+  --e-color-ink-hover: #2A303B;
+  --e-color-on-ink: #FFFFFF;
+
+  /* ---------- Colour: accent (cobalt, safe for text) ---------- */
+  --e-color-primary: #1F3BFF;          /* cobalt: highlight numbers, current nav marker, focus, link hover */
+  --e-color-primary-hover: #1630D6;
+  --e-color-on-primary: #FFFFFF;
+  --e-color-focus: #1F3BFF;
+
+  /* ---------- Colour: the silk (the hero ribbons carry their own palette in the mockup script;
+     these three are its echo, used only by the Contact email underline) ---------- */
+  --e-ribbon-face-1: #8FA2FF;          /* periwinkle */
+  --e-ribbon-face-2: #FF4FB2;          /* pink */
+  --e-ribbon-face-3: #FFB000;          /* amber */
+
+  /* ---------- Colour: the closing band (Contact) ---------- */
+  --e-color-band: #0D1015;
+  --e-color-band-text: #FFFFFF;
+  --e-color-band-muted: #A4ABB8;
+  --e-color-band-border: #262B35;
+  --e-color-band-focus: #7FA0FF;
+
+  /* ---------- Colour: status (reserved; the landing page shows none by default) ---------- */
+  --e-color-success: #0B7A4B;
+  --e-color-success-subtle: #E6F5EE;
+  --e-color-warning: #8A5A00;
+  --e-color-warning-subtle: #FFF4DB;
+  --e-color-danger: #C62828;
+  --e-color-danger-subtle: #FDECEC;
+  --e-color-info: #1F3BFF;
+  --e-color-info-subtle: #EDF0FF;
+
+  /* ---------- Typography ---------- */
+  --e-font-sans: var(--font-mona), 'Mona Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --e-font-display: var(--e-font-sans);
+  --e-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --e-text-xs: 0.8125rem;   /* 13 tags, list labels */
+  --e-text-sm: 0.9375rem;   /* 15 nav, small buttons, tools */
+  --e-text-base: 1.0625rem; /* 17 body */
+  --e-text-md: 1.1875rem;   /* 19 lead, blurbs */
+  --e-text-lg: 1.5rem;      /* 24 project titles */
+  --e-text-xl: 2rem;        /* 32 part titles in Skills */
+  --e-text-2xl: clamp(2.25rem, 1.6rem + 2vw, 3.25rem);    /* 36 to 52 section headings */
+  --e-text-3xl: clamp(2.5rem, 1.5rem + 3.1vw, 4.25rem);   /* 40 to 68 hero headline */
+  --e-text-stat: clamp(2.5rem, 1.9rem + 1.8vw, 3.5rem);   /* 40 to 56 numbers */
+  --e-text-email: clamp(2.25rem, 0.9rem + 5vw, 5.5rem);   /* 36 to 88 contact email */
+
+  --e-leading-tight: 1.02;
+  --e-leading-snug: 1.15;
+  --e-leading-normal: 1.55;
+  --e-tracking-display: -0.04em;
+  --e-tracking-heading: -0.025em;
+  --e-tracking-normal: -0.005em;
+
+  --e-weight-regular: 400;
+  --e-weight-medium: 500;
+  --e-weight-semibold: 600;
+
+  /* ---------- Spacing (4px base) ---------- */
+  --e-space-1: 0.25rem;  /* 4 */
+  --e-space-2: 0.5rem;   /* 8 */
+  --e-space-3: 0.75rem;  /* 12 */
+  --e-space-4: 1rem;     /* 16 */
+  --e-space-5: 1.25rem;  /* 20 */
+  --e-space-6: 1.5rem;   /* 24 */
+  --e-space-7: 2rem;     /* 32 */
+  --e-space-8: 2.5rem;   /* 40 */
+  --e-space-9: 3rem;     /* 48 */
+  --e-space-10: 4rem;    /* 64 */
+  --e-space-11: 6rem;    /* 96 */
+  --e-space-12: 8rem;    /* 128 */
+  --e-section-gap: clamp(5rem, 3rem + 6vw, 9rem);
+
+  /* ---------- Controls (owner spec: two sizes only) ---------- */
+  --e-control-lg: 48px;
+  --e-control-sm: 40px;
+
+  /* ---------- Radius ---------- */
+  --e-radius-sm: 6px;
+  --e-radius-md: 10px;   /* design-system thumbnails */
+  --e-radius-lg: 14px;   /* project images */
+  --e-radius-full: 999px;
+
+  /* ---------- Shadow (images only; never on text blocks) ---------- */
+  --e-shadow-sm: 0 1px 2px rgba(13, 16, 21, 0.06);
+  --e-shadow-md: 0 1px 2px rgba(13, 16, 21, 0.06), 0 8px 24px -12px rgba(13, 16, 21, 0.18);
+  --e-shadow-lg: 0 2px 4px rgba(13, 16, 21, 0.06), 0 28px 60px -24px rgba(13, 16, 21, 0.28);
+
+  /* ---------- Motion ---------- */
+  --e-duration-fast: 160ms;
+  --e-duration-base: 320ms;
+  --e-duration-slow: 800ms;
+  --e-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --e-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---------- Layout ---------- */
+  --e-content-max: 1248px;      /* the four guide columns live inside this */
+  --e-gutter: clamp(1.25rem, 3vw, 2.5rem);
+  --e-topbar-height: 68px;
+  --e-hairline: 1px;
+}
